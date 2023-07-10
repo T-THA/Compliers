@@ -1,9 +1,0 @@
-void func(){
-
-}
-int main(){
-    int a;
-    int b[10][10];
-    if(b || a){
-    }
-}

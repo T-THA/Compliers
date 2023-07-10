@@ -1,10 +1,10 @@
 {
     "java.project.sourcePaths": [
         "antlr4",
-        "/usr/local/lib/antlr-4.9.1-complete.jar"
+        "/usr/local/lib/*.jar"
     ],
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "/usr/local/lib/antlr-4.9.1-complete.jar"
+        "/usr/local/lib/*.jar"
     ]
 }
