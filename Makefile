@@ -16,7 +16,8 @@ ANTLRPATH = $(shell find /usr/local/lib -name "antlr-*-complete.jar")
 compile: antlr
 	$(call git_commit,"make")
 	mkdir -p classes
-	$(JAVAC) $(JAVAFILE) -d classes
+	$(JAVAC) -classpath $(ANTLRPATH) $(JAVAFILE) -d classes
+
 
 run: compile
 	java -classpath ./classes:$(ANTLRPATH) Main $(FILEPATH)
@@ -42,6 +43,14 @@ submit: clean
 	git gc
 	bash submit.sh
 
+mysubmit: clean
+	git add .
+	git commit -m "try"
+	bash submit.sh
+	
+eztest: compile
+	$(call git_commit, "test")
+	java -classpath ./classes:$(ANTLRPATH) Main ./tests/test1.sysy
 
 .PHONY: compile antlr test run clean submit
 
