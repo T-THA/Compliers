@@ -10,6 +10,8 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
     public LLVMModuleRef module;
     public LLVMBuilderRef builder;
     public LLVMTypeRef i32Type;
+    public LLVMFrame map;
+    public LLVMValueRef zero;
 
     public LLVMVisitor(){
         LLVMInitializeCore(LLVMGetGlobalPassRegistry());
@@ -21,6 +23,8 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         module = null;
         builder = null;
         i32Type = null;
+        map = new LLVMFrame();
+        zero = null;
     }
 
     public LLVMVisitor(LLVMModuleRef module_, LLVMBuilderRef builder_, LLVMTypeRef i32Type_){
@@ -33,6 +37,57 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         module = module_;
         builder = builder_;
         i32Type = i32Type_;
+        map = new LLVMFrame();
+        zero = LLVMConstInt(i32Type, 0, 0);
+    }
+
+    @Override 
+    public LLVMValueRef visitDecl(SysYParser.DeclContext ctx){
+        if(ctx.parent instanceof SysYParser.CompUnitContext){ // 全局变量
+            if(ctx.constDecl() != null){
+                for(SysYParser.ConstDefContext i : ctx.constDecl().constDef()){
+                    LLVMValueRef globalVar = LLVMAddGlobal(module, i32Type, i.IDENT().getText());
+                    LLVMSetInitializer(globalVar, LLVMConstInt(i32Type, getExpValue(i.constInitVal().constExp().exp()), 0));
+                    map.put(i.IDENT().getText(), getExpValue(i.constInitVal().constExp().exp()));
+                }
+            }else{
+                for(SysYParser.VarDefContext i : ctx.varDecl().varDef()){
+                    LLVMValueRef globalVar = LLVMAddGlobal(module, i32Type, i.IDENT().getText());
+                    if(i.ASSIGN() != null){
+                        LLVMSetInitializer(globalVar, LLVMConstInt(i32Type, getExpValue(i.initVal().exp()), 0));
+                        map.put(i.IDENT().getText(), getExpValue(i.initVal().exp()));
+                    }else{
+                        LLVMSetInitializer(globalVar, zero);
+                        map.put(i.IDENT().getText(), 0);
+                    }
+                    
+                    
+                }
+            } 
+        }else{ // 局部
+            if(ctx.constDecl() != null){
+                for(SysYParser.ConstDefContext i : ctx.constDecl().constDef()){
+                    LLVMValueRef pointer = LLVMBuildAlloca(builder, i32Type, i.IDENT().getText());
+                    LLVMBuildStore(builder, LLVMConstInt(i32Type, getExpValue(i.constInitVal().constExp().exp()), 0), pointer);
+                    map.put(i.IDENT().getText(), getExpValue(i.constInitVal().constExp().exp()));
+                }
+            }else{
+                for(SysYParser.VarDefContext i : ctx.varDecl().varDef()){
+                    LLVMValueRef pointer = LLVMBuildAlloca(builder, i32Type, i.IDENT().getText());
+                    if(i.ASSIGN() != null){
+                        LLVMBuildStore(builder, LLVMConstInt(i32Type, getExpValue(i.initVal().exp()), 0), pointer);
+                        map.put(i.IDENT().getText(), getExpValue(i.initVal().exp()));
+                    }else{
+                        LLVMBuildStore(builder, zero, pointer);
+                        map.put(i.IDENT().getText(), 0);
+                    }
+                    
+                    
+                }
+            }
+        }
+        super.visitChildren(ctx);
+        return null;
     }
 
     @Override
@@ -44,7 +99,10 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         LLVMBasicBlockRef block1 = LLVMAppendBasicBlock(function, ctx.IDENT().getText() + "Entry");
         LLVMPositionBuilderAtEnd(builder, block1);
 
+        LLVMFrame localMap = new LLVMFrame(map);
+        map = localMap;
         super.visitChildren(ctx);
+        map = map.parent;
         return null;
     }
 
@@ -53,9 +111,21 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         if(ctx.RETURN() != null){
             if(ctx.exp() != null){
                 int retValue = getExpValue(ctx.exp());
-                // System.out.println(retValue);
                 LLVMValueRef result = LLVMConstInt(i32Type, retValue, 0);
                 LLVMBuildRet(builder, result);
+            }
+        }
+        else{
+            if(ctx.lVal() != null){
+                map.replace(ctx.lVal().IDENT().getText(), getExpValue(ctx.exp()));
+            }
+            if(ctx.block() != null){
+                LLVMFrame localMap = new LLVMFrame(map);
+                map = localMap;
+            }
+            super.visitChildren(ctx);
+            if(ctx.block() != null){
+                map = map.parent;
             }
         }
         return null;
@@ -66,7 +136,7 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
             return getExpValue(ctx.exp(0));
         }
         else if(ctx.number() != null){
-            return Integer.parseInt(toInt(ctx.number().getText()));
+            return Integer.parseInt(toInt(ctx.number().INTEGER_CONST().getText()));
         }
         else if(ctx.unaryOp() != null){
             if(ctx.unaryOp().getText().equals("+")){
@@ -78,6 +148,9 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
             else if(ctx.unaryOp().getText().equals("!")){
                 return getExpValue(ctx.exp(0)) == 0 ? 1 : 0;
             }
+        }
+        else if(ctx.lVal() != null){
+            return map.get(ctx.lVal().IDENT().getText());
         }else{
             if(ctx.DIV() != null){
                 return getExpValue(ctx.exp(0)) / getExpValue(ctx.exp(1));

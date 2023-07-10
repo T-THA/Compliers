@@ -18,7 +18,7 @@ public class Visitor extends SysYParserBaseVisitor<Void>{
 
     public void errorAlert(int type, int lineNo){
         typeErrorFlag = true;
-        // if(type == 6)
+        // if(type == 6) // 输出单一错误
         System.err.println("Error type " + type + " at Line " +  lineNo + ": error");
     }
 
@@ -31,6 +31,18 @@ public class Visitor extends SysYParserBaseVisitor<Void>{
         return null;
     }
 
+    public String toInt(String ret){
+        if(ret.charAt(0) == '0' && ret.length() > 1 &&
+            ret.charAt(1) != 'x' && ret.charAt(1) != 'X'){
+            return String.valueOf(Long.parseLong(ret.substring(1), 8));
+        }
+        else if(ret.length() > 2 && 
+        (ret.substring(0,2).equals("0x") || ret.substring(0,2).equals("0X"))){
+            return  String.valueOf(Long.parseLong(ret.substring(2), 16));
+        }else{
+            return ret;
+        }
+    }
 
     // 访问终结符
     @Override
@@ -45,23 +57,13 @@ public class Visitor extends SysYParserBaseVisitor<Void>{
         else if(typenum == 34) highlight = "green";
         if(typenum == -1 || (typenum >=25 && typenum <=32)){
             return null;
-        // if(typenum == -1 || (typenum >=30 && typenum <=32)){
-        //     return null;
         }else{
             String typename = vocabulary.getSymbolicName(typenum);
             if(typenum == 34){
                 treeMsg = treeMsg + "  ".repeat(depth);
                 String ret = node.getText();
-                if(ret.charAt(0) == '0' && ret.length() > 1 &&
-                    ret.charAt(1) != 'x' && ret.charAt(1) != 'X'){
-                        treeMsg = treeMsg + Long.parseLong(ret.substring(1), 8);
-                    }
-                else if(ret.length() > 2 && 
-                (ret.substring(0,2).equals("0x") || ret.substring(0,2).equals("0X"))){
-                        treeMsg = treeMsg + Long.parseLong(ret.substring(2), 16);
-                }else{
-                        treeMsg = treeMsg + ret;
-                }
+                treeMsg = treeMsg + toInt(ret);
+                
                 treeMsg = treeMsg + " "+ typename + "[" + highlight +"]\n";
             }else{
                 treeMsg = treeMsg + "  ".repeat(depth) + node.getText() + " "+ typename + "[" + highlight +"]\n";
@@ -290,7 +292,8 @@ public class Visitor extends SysYParserBaseVisitor<Void>{
             else{
                 if(map.get(ctx.IDENT().getText()) == null){
                     return new Other(0); // 未定义
-                }else{
+                }
+                else{
                     return new Other(0);  // 对变量使用函数调用
                 }
             }
@@ -319,8 +322,6 @@ public class Visitor extends SysYParserBaseVisitor<Void>{
 	
 	@Override 
     public Void visitCond(SysYParser.CondContext ctx) { 
-        // if(ctx.EQ() != null || ctx.NEQ() != null || ctx.LT() != null ||
-        //    ctx.GT() != null || ctx.LE()  != null || ctx.GE() != null){
         if(ctx.exp() == null){
             Type type1 = getCondType(ctx.cond(0));
             Type type2 = getCondType(ctx.cond(1));

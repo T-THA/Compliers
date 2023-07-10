@@ -1,3 +1,8 @@
+int a = 2;
 int main(){
-    return 3+2*5/(5-3)+2%10;
+    int a = 3;
+    {
+        a = 4;
+    }
+    return a;
 }

@@ -1,4 +1,4 @@
-// package src;
+
 import java.io.IOException;
 
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.bytedeco.javacpp.BytePointer;
 
-import org.bytedeco.llvm.LLVM.*;
 import static org.bytedeco.llvm.global.LLVM.*;
 
 public class Main
