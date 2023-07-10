@@ -1,0 +1,10 @@
+{
+    "java.project.sourcePaths": [
+        "antlr4",
+        "/usr/local/lib/*.jar"
+    ],
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/usr/local/lib/*.jar"
+    ]
+}
