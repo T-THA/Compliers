@@ -47,10 +47,11 @@ mysubmit: clean
 	git add .
 	git commit -m "try"
 	bash submit.sh
+	make antlr
 	
 eztest: compile
 	$(call git_commit, "test")
-	java -classpath ./classes:$(ANTLRPATH) Main ./tests/test1.sysy
+	java -classpath ./classes:$(ANTLRPATH) Main ./tests/test4.sysy
 
 .PHONY: compile antlr test run clean submit
 

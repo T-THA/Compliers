@@ -1,14 +1,11 @@
 // package src;
 import java.io.IOException;
 
-import org.antlr.runtime.RecognitionException;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Vocabulary;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-
 
 public class Main
 {    
@@ -19,7 +16,6 @@ public class Main
         }else{
 
         String source = args[0];
-        CharStream tmp = CharStreams.fromFileName(source);
         CharStream input = CharStreams.fromFileName(source);
         SysYLexer sysYLexer = new SysYLexer(input);
 
@@ -41,8 +37,9 @@ public class Main
         if(!error){
             visitor.visit(tree);
             help(tree.getChild(0), visitor, 1);
+            if(!visitor.typeErrorFlag) System.err.print(visitor.treeMsg);
+            // System.err.print(visitor.treeMsg);
         }
-
         }
     }
 
@@ -50,11 +47,12 @@ public class Main
         visitor.setdepth(depth);
         visitor.visit(tree);
         
-        if(tree.getChildCount() != 0){
+        if(tree.getChildCount() != 0 && !visitor.stop){
             for(int i = 0; i < tree.getChildCount(); i++){
                 help(tree.getChild(i), visitor, depth+1);
             }
         }
+        visitor.stop = false;
     }
     
 }

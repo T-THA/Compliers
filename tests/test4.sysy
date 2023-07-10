@@ -1,0 +1,75 @@
+int redefined_function(){
+    return 0;
+}
+int redefined_function(){ // type 4
+    return 1;
+}
+
+void voidReturnInt(){
+    return 1; // type 7
+}
+int intReturnVoid(){
+    {
+    return; // type 7
+    }
+}
+int a;
+int function(int a, int b[]){
+    int b; // type 3
+    return b[a++b]; // type 6
+}
+int main(){
+    undefined_variable = 1;  // type 1
+    undefined_function();    // type 2
+    int a = function;          // type 5
+    function;
+    int redefined_variable = 1;
+    redefined_variable = undefined_function();  // type 2
+
+    int failed_define = undefined_function(2);  // type 2
+    failed_define = 10;
+
+    int array1[10], array2[10][10], array3[10][10][10];
+    int singleVar;
+    array2 = array3[0];
+    array2 = array3; // type 5
+    array1 = array3[0][0];
+    singleVar = array1; // type 5
+    singleVar = 1 + function; // type 6
+    singleVar = -array2 + array1[1];  // type 6
+    array2[function(singleVar,array3[0][0])] = array1 - array3[3];  // type 6 && type 5
+    singleVar = redefined_function + 1; // type 6
+    if(1 || array1 < 1 || 1 < array2[1] ) {   // type 6 * 2
+        return 1;
+    }
+    if(1 || 5 < array1){    // type 6
+        return function; // type 7
+    }
+    if(array1[0] && array2[1][2]){
+        return 1 + main[0];
+    }
+    if(1 || array1 < array2){ // type 6
+        if(array1){
+            singleVar;
+            return;  // type 7
+        }
+    }
+    if(main){
+        int singleVar[5];
+        return main + main(main); // type 6 && type 8
+    }
+    function(singleVar, array1);
+    function(function,function); // type 8
+    function(array1, singleVar); // type 8
+    function(singleVar, array2[10]);
+    function(singleVar, array2); // type 8
+
+    function[1] = 10;  // type 9
+    singleVar[1] = singleVar[1];  // type 9 * 2
+    array1[10][10] = 10;  // type 9
+
+    singleVar();  // type 10
+    array1();  // type 10
+
+    function = 10; // type 11
+} 

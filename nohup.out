@@ -1,0 +1,701 @@
+Program
+  CompUnit
+    FuncDef
+      FuncType
+        int INT[orange]
+      redefined_function IDENT[red]
+      ( L_PAREN[]
+      ) R_PAREN[]
+      Block
+        { L_BRACE[]
+        BlockItem
+          Stmt
+            return RETURN[orange]
+            Exp
+              Number
+                0 INTEGER_CONST[green]
+        } R_BRACE[]
+    FuncDef
+      FuncType
+        int INT[orange]
+      redefined_function IDENT[red]
+      ( L_PAREN[]
+      ) R_PAREN[]
+      Block
+        { L_BRACE[]
+        BlockItem
+          Stmt
+            return RETURN[orange]
+            Exp
+              Number
+                1 INTEGER_CONST[green]
+        } R_BRACE[]
+    FuncDef
+      FuncType
+        void VOID[orange]
+      voidReturnInt IDENT[red]
+      ( L_PAREN[]
+      ) R_PAREN[]
+      Block
+        { L_BRACE[]
+        BlockItem
+          Stmt
+            return RETURN[orange]
+            Exp
+              Number
+                1 INTEGER_CONST[green]
+        } R_BRACE[]
+    FuncDef
+      FuncType
+        int INT[orange]
+      intReturnVoid IDENT[red]
+      ( L_PAREN[]
+      ) R_PAREN[]
+      Block
+        { L_BRACE[]
+        BlockItem
+          Stmt
+            Block
+              { L_BRACE[]
+              BlockItem
+                Stmt
+                  return RETURN[orange]
+              } R_BRACE[]
+        } R_BRACE[]
+    FuncDef
+      FuncType
+        int INT[orange]
+      function IDENT[red]
+      ( L_PAREN[]
+      FuncFParams
+        FuncFParam
+          BType
+            int INT[orange]
+          a IDENT[red]
+        FuncFParam
+          BType
+            int INT[orange]
+          b IDENT[red]
+          [ L_BRACKT[]
+      ) R_PAREN[]
+      Block
+        { L_BRACE[]
+        BlockItem
+          Decl
+            VarDecl
+              BType
+                int INT[orange]
+              VarDef
+                b IDENT[red]
+        BlockItem
+          Stmt
+            return RETURN[orange]
+            Exp
+              LVal
+                b IDENT[red]
+                [ L_BRACKT[]
+                Exp
+                  Exp
+                    LVal
+                      a IDENT[red]
+                  + PLUS[blue]
+                  Exp
+                    UnaryOp
+                      + PLUS[blue]
+                    Exp
+                      LVal
+                        b IDENT[red]
+        } R_BRACE[]
+    FuncDef
+      FuncType
+        int INT[orange]
+      main IDENT[red]
+      ( L_PAREN[]
+      ) R_PAREN[]
+      Block
+        { L_BRACE[]
+        BlockItem
+          Stmt
+            LVal
+              undefined_variable IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              Number
+                1 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            Exp
+              undefined_function IDENT[red]
+              ( L_PAREN[]
+              ) R_PAREN[]
+        BlockItem
+          Decl
+            VarDecl
+              BType
+                int INT[orange]
+              VarDef
+                a IDENT[red]
+                = ASSIGN[blue]
+                InitVal
+                  Exp
+                    LVal
+                      function IDENT[red]
+        BlockItem
+          Stmt
+            Exp
+              LVal
+                function IDENT[red]
+        BlockItem
+          Decl
+            VarDecl
+              BType
+                int INT[orange]
+              VarDef
+                redefined_variable IDENT[red]
+                = ASSIGN[blue]
+                InitVal
+                  Exp
+                    Number
+                      1 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              redefined_variable IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              undefined_function IDENT[red]
+              ( L_PAREN[]
+              ) R_PAREN[]
+        BlockItem
+          Decl
+            VarDecl
+              BType
+                int INT[orange]
+              VarDef
+                failed_define IDENT[red]
+                = ASSIGN[blue]
+                InitVal
+                  Exp
+                    undefined_function IDENT[red]
+                    ( L_PAREN[]
+                    FuncRParams
+                      Param
+                        Exp
+                          Number
+                            2 INTEGER_CONST[green]
+                    ) R_PAREN[]
+        BlockItem
+          Stmt
+            LVal
+              failed_define IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              Number
+                10 INTEGER_CONST[green]
+        BlockItem
+          Decl
+            VarDecl
+              BType
+                int INT[orange]
+              VarDef
+                array1 IDENT[red]
+                [ L_BRACKT[]
+                ConstExp
+                  Exp
+                    Number
+                      10 INTEGER_CONST[green]
+              VarDef
+                array2 IDENT[red]
+                [ L_BRACKT[]
+                ConstExp
+                  Exp
+                    Number
+                      10 INTEGER_CONST[green]
+                [ L_BRACKT[]
+                ConstExp
+                  Exp
+                    Number
+                      10 INTEGER_CONST[green]
+              VarDef
+                array3 IDENT[red]
+                [ L_BRACKT[]
+                ConstExp
+                  Exp
+                    Number
+                      10 INTEGER_CONST[green]
+                [ L_BRACKT[]
+                ConstExp
+                  Exp
+                    Number
+                      10 INTEGER_CONST[green]
+                [ L_BRACKT[]
+                ConstExp
+                  Exp
+                    Number
+                      10 INTEGER_CONST[green]
+        BlockItem
+          Decl
+            VarDecl
+              BType
+                int INT[orange]
+              VarDef
+                singleVar IDENT[red]
+        BlockItem
+          Stmt
+            LVal
+              array2 IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              LVal
+                array3 IDENT[red]
+                [ L_BRACKT[]
+                Exp
+                  Number
+                    0 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              array2 IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              LVal
+                array3 IDENT[red]
+        BlockItem
+          Stmt
+            LVal
+              array1 IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              LVal
+                array3 IDENT[red]
+                [ L_BRACKT[]
+                Exp
+                  Number
+                    0 INTEGER_CONST[green]
+                [ L_BRACKT[]
+                Exp
+                  Number
+                    0 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              singleVar IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              LVal
+                array1 IDENT[red]
+        BlockItem
+          Stmt
+            LVal
+              singleVar IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              Exp
+                Number
+                  1 INTEGER_CONST[green]
+              + PLUS[blue]
+              Exp
+                LVal
+                  function IDENT[red]
+        BlockItem
+          Stmt
+            LVal
+              singleVar IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              Exp
+                UnaryOp
+                  - MINUS[blue]
+                Exp
+                  LVal
+                    array2 IDENT[red]
+              + PLUS[blue]
+              Exp
+                LVal
+                  array1 IDENT[red]
+                  [ L_BRACKT[]
+                  Exp
+                    Number
+                      1 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              array2 IDENT[red]
+              [ L_BRACKT[]
+              Exp
+                function IDENT[red]
+                ( L_PAREN[]
+                FuncRParams
+                  Param
+                    Exp
+                      LVal
+                        singleVar IDENT[red]
+                  Param
+                    Exp
+                      LVal
+                        array3 IDENT[red]
+                        [ L_BRACKT[]
+                        Exp
+                          Number
+                            0 INTEGER_CONST[green]
+                        [ L_BRACKT[]
+                        Exp
+                          Number
+                            0 INTEGER_CONST[green]
+                ) R_PAREN[]
+            = ASSIGN[blue]
+            Exp
+              Exp
+                LVal
+                  array1 IDENT[red]
+              - MINUS[blue]
+              Exp
+                LVal
+                  array3 IDENT[red]
+                  [ L_BRACKT[]
+                  Exp
+                    Number
+                      3 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              singleVar IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              Exp
+                LVal
+                  redefined_function IDENT[red]
+              + PLUS[blue]
+              Exp
+                Number
+                  1 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            if IF[orange]
+            ( L_PAREN[]
+            Cond
+              Cond
+                Cond
+                  Exp
+                    Number
+                      1 INTEGER_CONST[green]
+                || OR[blue]
+                Cond
+                  Cond
+                    Exp
+                      LVal
+                        array1 IDENT[red]
+                  < LT[blue]
+                  Cond
+                    Exp
+                      Number
+                        1 INTEGER_CONST[green]
+              || OR[blue]
+              Cond
+                Cond
+                  Exp
+                    Number
+                      1 INTEGER_CONST[green]
+                < LT[blue]
+                Cond
+                  Exp
+                    LVal
+                      array2 IDENT[red]
+                      [ L_BRACKT[]
+                      Exp
+                        Number
+                          1 INTEGER_CONST[green]
+            ) R_PAREN[]
+            Stmt
+              Block
+                { L_BRACE[]
+                BlockItem
+                  Stmt
+                    return RETURN[orange]
+                    Exp
+                      Number
+                        1 INTEGER_CONST[green]
+                } R_BRACE[]
+        BlockItem
+          Stmt
+            if IF[orange]
+            ( L_PAREN[]
+            Cond
+              Cond
+                Exp
+                  Number
+                    1 INTEGER_CONST[green]
+              || OR[blue]
+              Cond
+                Cond
+                  Exp
+                    Number
+                      5 INTEGER_CONST[green]
+                < LT[blue]
+                Cond
+                  Exp
+                    LVal
+                      array1 IDENT[red]
+            ) R_PAREN[]
+            Stmt
+              Block
+                { L_BRACE[]
+                BlockItem
+                  Stmt
+                    return RETURN[orange]
+                    Exp
+                      LVal
+                        function IDENT[red]
+                } R_BRACE[]
+        BlockItem
+          Stmt
+            if IF[orange]
+            ( L_PAREN[]
+            Cond
+              Cond
+                Exp
+                  LVal
+                    array1 IDENT[red]
+                    [ L_BRACKT[]
+                    Exp
+                      Number
+                        0 INTEGER_CONST[green]
+              && AND[blue]
+              Cond
+                Exp
+                  LVal
+                    array2 IDENT[red]
+                    [ L_BRACKT[]
+                    Exp
+                      Number
+                        1 INTEGER_CONST[green]
+                    [ L_BRACKT[]
+                    Exp
+                      Number
+                        2 INTEGER_CONST[green]
+            ) R_PAREN[]
+            Stmt
+              Block
+                { L_BRACE[]
+                BlockItem
+                  Stmt
+                    return RETURN[orange]
+                    Exp
+                      Number
+                        1 INTEGER_CONST[green]
+                } R_BRACE[]
+        BlockItem
+          Stmt
+            if IF[orange]
+            ( L_PAREN[]
+            Cond
+              Cond
+                Exp
+                  Number
+                    1 INTEGER_CONST[green]
+              || OR[blue]
+              Cond
+                Cond
+                  Exp
+                    LVal
+                      array1 IDENT[red]
+                < LT[blue]
+                Cond
+                  Exp
+                    LVal
+                      array2 IDENT[red]
+            ) R_PAREN[]
+            Stmt
+              Block
+                { L_BRACE[]
+                BlockItem
+                  Stmt
+                    if IF[orange]
+                    ( L_PAREN[]
+                    Cond
+                      Exp
+                        LVal
+                          array1 IDENT[red]
+                    ) R_PAREN[]
+                    Stmt
+                      Block
+                        { L_BRACE[]
+                        BlockItem
+                          Stmt
+                            return RETURN[orange]
+                        } R_BRACE[]
+                } R_BRACE[]
+        BlockItem
+          Stmt
+            if IF[orange]
+            ( L_PAREN[]
+            Cond
+              Exp
+                LVal
+                  main IDENT[red]
+            ) R_PAREN[]
+            Stmt
+              Block
+                { L_BRACE[]
+                BlockItem
+                  Stmt
+                    return RETURN[orange]
+                    Exp
+                      Exp
+                        LVal
+                          main IDENT[red]
+                      + PLUS[blue]
+                      Exp
+                        main IDENT[red]
+                        ( L_PAREN[]
+                        FuncRParams
+                          Param
+                            Exp
+                              LVal
+                                main IDENT[red]
+                        ) R_PAREN[]
+                } R_BRACE[]
+        BlockItem
+          Stmt
+            Exp
+              function IDENT[red]
+              ( L_PAREN[]
+              FuncRParams
+                Param
+                  Exp
+                    LVal
+                      singleVar IDENT[red]
+                Param
+                  Exp
+                    LVal
+                      array1 IDENT[red]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            Exp
+              function IDENT[red]
+              ( L_PAREN[]
+              FuncRParams
+                Param
+                  Exp
+                    LVal
+                      function IDENT[red]
+                Param
+                  Exp
+                    LVal
+                      function IDENT[red]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            Exp
+              function IDENT[red]
+              ( L_PAREN[]
+              FuncRParams
+                Param
+                  Exp
+                    LVal
+                      array1 IDENT[red]
+                Param
+                  Exp
+                    LVal
+                      singleVar IDENT[red]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            Exp
+              function IDENT[red]
+              ( L_PAREN[]
+              FuncRParams
+                Param
+                  Exp
+                    LVal
+                      singleVar IDENT[red]
+                Param
+                  Exp
+                    LVal
+                      array2 IDENT[red]
+                      [ L_BRACKT[]
+                      Exp
+                        Number
+                          10 INTEGER_CONST[green]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            Exp
+              function IDENT[red]
+              ( L_PAREN[]
+              FuncRParams
+                Param
+                  Exp
+                    LVal
+                      singleVar IDENT[red]
+                Param
+                  Exp
+                    LVal
+                      array2 IDENT[red]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            LVal
+              function IDENT[red]
+              [ L_BRACKT[]
+              Exp
+                Number
+                  1 INTEGER_CONST[green]
+            = ASSIGN[blue]
+            Exp
+              Number
+                10 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              singleVar IDENT[red]
+              [ L_BRACKT[]
+              Exp
+                Number
+                  1 INTEGER_CONST[green]
+            = ASSIGN[blue]
+            Exp
+              LVal
+                singleVar IDENT[red]
+                [ L_BRACKT[]
+                Exp
+                  Number
+                    1 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            LVal
+              array1 IDENT[red]
+              [ L_BRACKT[]
+              Exp
+                Number
+                  10 INTEGER_CONST[green]
+              [ L_BRACKT[]
+              Exp
+                Number
+                  10 INTEGER_CONST[green]
+            = ASSIGN[blue]
+            Exp
+              Number
+                10 INTEGER_CONST[green]
+        BlockItem
+          Stmt
+            Exp
+              singleVar IDENT[red]
+              ( L_PAREN[]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            Exp
+              array1 IDENT[red]
+              ( L_PAREN[]
+              ) R_PAREN[]
+        BlockItem
+          Stmt
+            LVal
+              function IDENT[red]
+            = ASSIGN[blue]
+            Exp
+              Number
+                10 INTEGER_CONST[green]
+        } R_BRACE[]
