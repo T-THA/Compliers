@@ -1,21 +1,21 @@
 import java.util.HashMap;
 
 
-public class LLVMFrame {
-    public LLVMFrame parent;
-    public HashMap<String, Integer> map;
+public class LLVMFrame<T> {
+    public LLVMFrame<T> parent;
+    public HashMap<String, T> map;
 
     public LLVMFrame(){
         parent = null;
-        map = new HashMap<String, Integer>();
+        map = new HashMap<String, T>();
     }
 
-    public LLVMFrame(LLVMFrame parent_){
+    public LLVMFrame(LLVMFrame<T> parent_){
         parent = parent_;
-        map = new HashMap<String, Integer>();
+        map = new HashMap<String, T>();
     }
 
-    public void put(String key, int i){
+    public void put(String key, T i){
         map.put(key, i);
     }
 
@@ -31,13 +31,13 @@ public class LLVMFrame {
         return map.containsKey(key);
     }
 
-    public Integer get(String key){
+    public T get(String key){
         if(map.get(key) != null) return map.get(key);
         if(parent != null) return parent.get(key);
         return null;
     }
 
-    public Integer replace(String key, int val){
+    public T replace(String key, T val){
         if(!map.containsKey(key)){
             return parent.replace(key, val);
         }

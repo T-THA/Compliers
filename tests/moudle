@@ -1,11 +1,19 @@
 ; ModuleID = 'module'
 source_filename = "module"
 
-@a = global i32 2
+@sort_arr = global i32 0
 
 define i32 @main() {
 mainEntry:
   %a = alloca i32, align 4
-  store i32 3, i32* %a, align 4
-  ret i32 4
+  store i32 0, i32* %a, align 4
+  %b = alloca i32, align 4
+  store i32 0, i32* %b, align 4
+  %i = alloca i32, align 4
+  store i32 0, i32* %i, align 4
+  %j = alloca i32, align 4
+  store i32 0, i32* %j, align 4
+  %k = alloca i32, align 4
+  store i32 0, i32* %k, align 4
+  ret i32 0
 }

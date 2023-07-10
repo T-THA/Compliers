@@ -90,7 +90,7 @@ exp
    | lVal 
    | number
    | IDENT L_PAREN funcRParams? R_PAREN 
-   | unaryOp exp 
+   | unaryOp exp
    | exp (MUL | DIV | MOD) exp
    | exp (PLUS | MINUS) exp
    ;
