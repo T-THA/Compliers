@@ -14,6 +14,7 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
     public LLVMBuilderRef builder;
     public LLVMTypeRef i32Type;
     public LLVMFrame<Integer> map;
+    public LLVMFrame<ArrayList<Integer>> arrayMap; // 模仿map
     public HashMap<String, LLVMFunction> funcMap;
     public LLVMValueRef zero;
     public LLVMTypeRef voidType = LLVMVoidType();
@@ -28,10 +29,12 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         LLVMInitializeNativeAsmParser();
         LLVMInitializeNativeTarget();
 
+
         module = LLVMModuleCreateWithName("module");
         builder = LLVMCreateBuilder();
         i32Type = LLVMInt32Type();
         map = new LLVMFrame<Integer>();
+        arrayMap = new LLVMFrame<ArrayList<Integer>>();
         funcMap = new HashMap<String, LLVMFunction>();
         zero = LLVMConstInt(i32Type, 0, 0);
     }
@@ -47,6 +50,7 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         builder = builder_;
         i32Type = i32Type_;
         map = new LLVMFrame<Integer>();
+        arrayMap = new LLVMFrame<ArrayList<Integer>>();
         funcMap = new HashMap<String, LLVMFunction>();
         zero = LLVMConstInt(i32Type, 0, 0);
     }
@@ -57,12 +61,48 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         if(ctx.parent instanceof SysYParser.CompUnitContext){ // 全局变量
             if(ctx.constDecl() != null){
                 for(SysYParser.ConstDefContext i : ctx.constDecl().constDef()){
+                    if(i.L_BRACKT() != null && i.L_BRACKT().size() != 0){
+                        int size = getExpValue(i.constExp(0).exp());
+                        LLVMValueRef globalVar = LLVMAddGlobal(module, LLVMArrayType(i32Type, size), i.IDENT().getText());
+                        ArrayList<Integer> tmpArr = new ArrayList<Integer>();
+                        for(SysYParser.ConstInitValContext j : i.constInitVal().constInitVal()){
+                            tmpArr.add(getExpValue(j.constExp().exp()));
+                        }
+                        for(int k = 0; k < size - i.constInitVal().constInitVal().size(); k++) tmpArr.add(0);
+                        // LLVMSetInitializer(globalVar, LLVMConstArray(i32Type, globalVar, size));
+                        arrayMap.put(i.IDENT().getText(), tmpArr);
+                    }
+                    else{
+
                     LLVMValueRef globalVar = LLVMAddGlobal(module, i32Type, i.IDENT().getText());
                     LLVMSetInitializer(globalVar, LLVMConstInt(i32Type, getExpValue(i.constInitVal().constExp().exp()), 0));
                     map.put(i.IDENT().getText(), getExpValue(i.constInitVal().constExp().exp()));
+                    
+                    }
                 }
             }else{
                 for(SysYParser.VarDefContext i : ctx.varDecl().varDef()){
+                    if(i.L_BRACKT() != null && i.L_BRACKT().size() != 0){
+                        int size = getExpValue(i.constExp(0).exp());
+                        LLVMValueRef globalVar = LLVMAddGlobal(module, LLVMArrayType(i32Type, size), i.IDENT().getText());
+                        
+                        ArrayList<Integer> tmpArr = new ArrayList<Integer>();
+                        if(i.ASSIGN() != null){
+                            if(i.initVal().exp() != null){
+                                //TODO
+                            }else{
+                                for(SysYParser.InitValContext j: i.initVal().initVal()){
+                                    tmpArr.add(getExpValue(j.exp()));
+                                }
+                                for(int k = 0; k < size - i.initVal().initVal().size(); k++) tmpArr.add(0);
+                            }
+                        }else{
+                            for(int j = 0; j < size; j++) tmpArr.add(0);
+                        }
+                        arrayMap.put(i.IDENT().getText(), tmpArr);
+                    }
+                    else{
+
                     LLVMValueRef globalVar = LLVMAddGlobal(module, i32Type, i.IDENT().getText());
                     if(i.ASSIGN() != null){
                         LLVMSetInitializer(globalVar, LLVMConstInt(i32Type, getExpValue(i.initVal().exp()), 0));
@@ -71,6 +111,8 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
                         LLVMSetInitializer(globalVar, zero);
                         map.put(i.IDENT().getText(), 0);
                     }
+
+                    }
                     
                     
                 }
@@ -78,12 +120,47 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         }else{ // 局部
             if(ctx.constDecl() != null){
                 for(SysYParser.ConstDefContext i : ctx.constDecl().constDef()){
+                    if(i.L_BRACKT() != null && i.L_BRACKT().size() != 0){
+                        int size = getExpValue(i.constExp(0).exp());
+                        ArrayList<Integer> tmpArr = new ArrayList<Integer>();
+                        for(SysYParser.ConstInitValContext j : i.constInitVal().constInitVal()){
+                            tmpArr.add(getExpValue(j.constExp().exp()));
+                        }
+                        for(int k = 0; k < size - i.constInitVal().constInitVal().size(); k++) tmpArr.add(0);
+                        arrayMap.put(i.IDENT().getText(), tmpArr);
+                    }
+                    
+                    else{
+
                     LLVMValueRef pointer = LLVMBuildAlloca(builder, i32Type, i.IDENT().getText());
                     LLVMBuildStore(builder, LLVMConstInt(i32Type, getExpValue(i.constInitVal().constExp().exp()), 0), pointer);
                     map.put(i.IDENT().getText(), getExpValue(i.constInitVal().constExp().exp()));
+                    
+                    }
                 }
             }else{
                 for(SysYParser.VarDefContext i : ctx.varDecl().varDef()){
+                    if(i.L_BRACKT() != null && i.L_BRACKT().size() != 0){
+                        int size = getExpValue(i.constExp(0).exp());
+                        
+                        ArrayList<Integer> tmpArr = new ArrayList<Integer>();
+                        if(i.ASSIGN() != null){
+                            if(i.initVal().exp() != null){
+                                //TODO
+                            }else{
+                                for(SysYParser.InitValContext j: i.initVal().initVal()){
+                                    tmpArr.add(getExpValue(j.exp()));
+                                }
+                                for(int k = 0; k < size - i.initVal().initVal().size(); k++) tmpArr.add(0);
+                            }
+                        }else{
+                            for(int j = 0; j < size; j++) tmpArr.add(0);
+                        }
+                        arrayMap.put(i.IDENT().getText(), tmpArr);
+                    }
+
+                    else{
+
                     LLVMValueRef pointer = LLVMBuildAlloca(builder, i32Type, i.IDENT().getText());
                     if(i.ASSIGN() != null){
                         LLVMBuildStore(builder, LLVMConstInt(i32Type, getExpValue(i.initVal().exp()), 0), pointer);
@@ -93,7 +170,7 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
                         map.put(i.IDENT().getText(), 0);
                     }
                     
-                    
+                    }
                 }
             }
         }
@@ -111,31 +188,36 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
             LLVMBasicBlockRef block1 = LLVMAppendBasicBlock(function, ctx.IDENT().getText() + "Entry");
             LLVMPositionBuilderAtEnd(builder, block1);
             LLVMFrame<Integer> localMap = new LLVMFrame<Integer>(map);
+            LLVMFrame<ArrayList<Integer>> localArrMap = new LLVMFrame<ArrayList<Integer>>(arrayMap);
             map = localMap;
+            arrayMap = localArrMap;
             String tmpname = funcName;
             funcName = "main";
             super.visitChildren(ctx);
             funcName = tmpname;
             map = map.parent;
+            arrayMap = arrayMap.parent;
             return null;
         }else{
-            // LLVMTypeRef returnType = ctx.funcType().INT() == null ? voidType : i32Type;
             int size = ctx.funcFParams() == null ? 0 : ctx.funcFParams().funcFParam().size();
-            // PointerPointer<Pointer> argumentTypes = new PointerPointer<>(size);
-            // LLVMTypeRef ft = LLVMFunctionType(returnType, argumentTypes, 0, 0);
-            // LLVMValueRef function = LLVMAddFunction(module, ctx.IDENT().getText(), ft);
-            // LLVMBasicBlockRef block1 = LLVMAppendBasicBlock(function, ctx.IDENT().getText() + "Entry");
-            // LLVMPositionBuilderAtEnd(builder, block1);
-
             // TODO
             LLVMFrame<Integer> localMap = new LLVMFrame<Integer>(map);
+            LLVMFrame<ArrayList<Integer>> localArrMap = new LLVMFrame<ArrayList<Integer>>(arrayMap);
             ArrayList<String> funcParams = new ArrayList<String>();
+            ArrayList<String> funcArrParams = new ArrayList<String>();
             for(int i = 0; i < size; i++){
                 String paramName = ctx.funcFParams().funcFParam(i).IDENT().getText();
-                localMap.put(paramName, 0);
-                funcParams.add(paramName);
+                if(ctx.funcFParams().funcFParam(i).L_BRACKT().size() != 0){
+                    localArrMap.put(paramName, new ArrayList<Integer>());
+                    funcArrParams.add(paramName);
+                }
+                else{
+                    localMap.put(paramName, 0);
+                    funcParams.add(paramName);
+                }
             }
-            LLVMFunction func = new LLVMFunction(ctx.block(), localMap, ctx.IDENT().getText(), funcParams);
+            LLVMFunction func = new LLVMFunction(ctx.block(), localMap, localArrMap, 
+                                        ctx.IDENT().getText(), funcParams, funcArrParams);
             funcMap.put(ctx.IDENT().getText(), func);
             return null;
         }
@@ -162,14 +244,29 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         }
         else if(ctx.lVal() != null){
             // TODO
-            map.replace(ctx.lVal().IDENT().getText(), getExpValue(ctx.exp()));
-            super.visitChildren(ctx);
+            if(ctx.lVal().L_BRACKT() != null && ctx.lVal().L_BRACKT().size() != 0){
+                String arrayName = ctx.lVal().IDENT().getText();
+                ArrayList<Integer> tmpArrayList = arrayMap.get(arrayName);
+                int val = getExpValue(ctx.exp());
+                tmpArrayList.set(getExpValue(ctx.lVal().exp(0)), val);
+                arrayMap.replace(arrayName, tmpArrayList);
+                super.visitChildren(ctx);
+            }
+            else{
+                // TODO 数组直接赋值
+                map.replace(ctx.lVal().IDENT().getText(), getExpValue(ctx.exp()));
+                super.visitChildren(ctx);
+            }
+            
         }
         else if(ctx.block() != null){
             LLVMFrame<Integer> localMap = new LLVMFrame<Integer>(map);
+            LLVMFrame<ArrayList<Integer>> localArrMap = new LLVMFrame<ArrayList<Integer>>(arrayMap);
             map = localMap;
+            arrayMap = localArrMap;
             super.visitChildren(ctx);
             map = map.parent;
+            arrayMap = arrayMap.parent;
         }
         else if(ctx.IF() != null){
             int flag = getCondValue(ctx.cond());
@@ -195,7 +292,11 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         else if(ctx.CONTINUE() != null){
             continueFlag = true;
         }
-
+        else if(ctx.exp() != null){
+            if(ctx.exp().IDENT() != null){
+                getExpValue(ctx.exp());
+            }
+        }
 
         }
         return null;
@@ -242,7 +343,7 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
     public int getExpValue(SysYParser.ExpContext ctx){
         if(ctx == null){
             // NUll POINTER
-            return 0;
+            return 1;
         }else 
 
         if(ctx.IDENT() !=null){
@@ -250,16 +351,28 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
             LLVMFunction func = funcMap.get(ctx.IDENT().getText());
             // TODO 函数传参修改
             ArrayList<Integer> params = new ArrayList<Integer>();
+            ArrayList<ArrayList<Integer>> arrParams = new ArrayList<ArrayList<Integer>>();
             for(int i = 0; i < size; i++){
-                params.add(getExpValue(ctx.funcRParams().param(i).exp()));
+                if(ctx.funcRParams().param(i).exp().lVal() != null
+                && arrayMap.containsKey(ctx.funcRParams().param(i).exp().lVal().IDENT().getText())
+                && ctx.funcRParams().param(i).exp().lVal().L_BRACKT().size() == 0){
+                    arrParams.add(arrayMap.get(ctx.funcRParams().param(i).exp().lVal().IDENT().getText()));
+                }
+                else{
+                    params.add(getExpValue(ctx.funcRParams().param(i).exp()));
+                }
+                
             }
-            func.Assign(params);
+            func.Assign(params, arrParams);
             String tmpname = funcName;
             funcName = ctx.IDENT().getText();
             LLVMFrame<Integer> tmpMap = map;
+            LLVMFrame<ArrayList<Integer>> tmpArrMap = arrayMap;
             map = func.map;
+            arrayMap = func.arrayMap;
             super.visitBlock(func.ctx);
             map = tmpMap;
+            arrayMap = tmpArrMap;
             funcName = tmpname;
             return func.retValue;
         }
@@ -282,7 +395,15 @@ public class LLVMVisitor extends SysYParserBaseVisitor<LLVMValueRef>{
         }
         else if(ctx.lVal() != null){
             // TODO
-            return map.get(ctx.lVal().IDENT().getText());
+            if(ctx.lVal().L_BRACKT() != null && ctx.lVal().L_BRACKT().size() != 0){
+                int loca = getExpValue(ctx.lVal().exp(0));
+                return arrayMap.get(ctx.lVal().IDENT().getText()).get(loca);
+            }
+            else{
+                
+                return map.get(ctx.lVal().IDENT().getText());
+            }
+            
         }else{
             if(ctx.DIV() != null){
                 return getExpValue(ctx.exp(0)) / getExpValue(ctx.exp(1));
