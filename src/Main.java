@@ -15,10 +15,12 @@ public class Main
         if (args.length < 1) {
             System.err.println("input path is required");
         }
+
         String source = args[0];
         CharStream input = CharStreams.fromFileName(source);
         SysYLexer sysYLexer = new SysYLexer(input);
         sysYLexer.removeErrorListeners();
+        
         sysYLexer.addErrorListener(new BaseErrorListener(){
             @Override
             public  void syntaxError(org.antlr.v4.runtime.Recognizer<?,?> recognizer, 
