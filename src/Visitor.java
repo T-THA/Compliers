@@ -318,8 +318,6 @@ public class Visitor extends SysYParserBaseVisitor<Void>{
 	
 	@Override 
     public Void visitCond(SysYParser.CondContext ctx) { 
-        // if(ctx.EQ() != null || ctx.NEQ() != null || ctx.LT() != null ||
-        //    ctx.GT() != null || ctx.LE()  != null || ctx.GE() != null){
         if(ctx.exp() == null){
             Type type1 = getCondType(ctx.cond(0));
             Type type2 = getCondType(ctx.cond(1));
